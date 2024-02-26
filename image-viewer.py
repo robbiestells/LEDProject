@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+import time
+import sys
+
+from rgbmatrix import RGBMatrix, RGBMatrixOptions
+from PIL import Image
+
+if len(sys.argv) < 2:
+    sys.exit("Require an image argument")
+else:
+    image_file = sys.argv[1]
+
+image = Image.open(image_file)
+
+# Configuration for the matrix
+options = RGBMatrixOptions()
+options.rows = 32
+options.cols = 64
+options.multiplexing = 0
+options.row_address_type = 0
+options.chain_length = 1
+options.parallel = 1
+options.brightness = 100
+options.led_rgb_sequence = "RGB"
+options.hardware_mapping = "adafruit-hat"
+options.gpio_slowdown = 4
+options.pwm_lsb_nanoseconds = 130
+options.disable_hardware_pulsing = True
+options.scan_mode = 1
+options.pwm_bits = 1
+options.show_refresh_rate = 0
+options.daemon = 0
+options.drop_privileges = 0
+options.pixel_mapper_config = "U-mapper;Rotate:0"
+matrix = RGBMatrix(options = options)
+
+# Make image fit our screen.
+image.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
+
+matrix.SetImage(image.convert('RGB'))
+
+try:
+    print("Press CTRL-C to stop.")
+    while True:
+        time.sleep(100)
+except KeyboardInterrupt:
+    sys.exit(0)
